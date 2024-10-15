@@ -1,6 +1,6 @@
 # Matcha - Dating App
 
-**Version**: 4.2  
+**Version**: 1.0  
 **Summary**: Because love too can be industrialized.
 
 ## Table of Contents
@@ -28,19 +28,63 @@
 
 ## Installation
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/rakhsas/matcha.git
-   cd matcha
+    ```bash
+    git clone https://github.com/rakhsas/matcha.git
+    cd matcha
+
 2. Install dependencies (assuming you are using Node.js):
     ```bash
     make
 
-Set up environment variables:
+3. Set up environment variables:
+    
+    `Create a .env file at the root of the project and include necessary keys, e.g., database credentials and API keys.`
 
-    Create a .env file at the root of the project and include necessary keys, e.g., database credentials and API keys.
+    ```bash
+    DB_HOST=your_db_host
+    DB_USER=your_db_user
+    DB_PASS=your_db_pass
+    ```
 
-```bash
-DB_HOST=your_db_host
-DB_USER=your_db_user
-DB_PASS=your_db_pass
+## Usage
 
+**1.** Access the app in your browser by navigating to `http://localhost:3000`.
+
+**2.** Register a new account, verify via email, and log in.
+
+**3.** Complete your profile with preferences, upload photos, and start browsing.
+
+**4.** Use the search and filtering options to find potential matches.
+
+**5.** Like a profile to express interest, and if the interest is mutual, start chatting!
+
+## Technologies
+
+**Frontend**: React.js, Bootstrap
+
+**Backend**: Node.js, Express
+
+**Database**: PostgreSQL
+
+**Real-time Communication**: Socket.io for real-time chat and notifications
+
+**Geolocation**: GPS-based positioning for match suggestions
+
+**Authentication**: JWT-based authentication and secure password hashing
+
+## Security
+
+- Passwords are hashed using bcrypt.
+- Forms are validated to prevent SQL injection.
+- HTTPS is enforced for secure communication.
+- All sensitive data is stored in environment variables (.env file).
+
+
+
+### How to Use This Code
+```txt
+1. Copy the above code.
+2. Open your `README.md` file in a text editor or your code editor.
+3. Paste the code and save the file.
+Once you've saved the file, it should display correctly formatted text on GitHub or any other platform that supports Markdown.
+```

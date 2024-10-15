@@ -60,7 +60,7 @@
 
 ## Technologies
 
-**Frontend**: React.js, Bootstrap
+**Frontend**: Angular, Tailwind
 
 **Backend**: Node.js, Express
 

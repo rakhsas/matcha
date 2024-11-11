@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "checkJs": true,       // Enables type-checking in JavaScript files
+      "types": ["jest"]  ,
+      "module": "NodeNext",   // Includes Jest’s type definitions for IntelliSense
+      "moduleResolution": "NodeNext"
+    },
+    "include": ["**/*.js", "jest.config.cjs"]   // Applies to all `.js` files
+  }
+  

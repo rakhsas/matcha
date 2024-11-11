@@ -1,0 +1,52 @@
+services:
+  postgres:
+    container_name: matcha_postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - matcha_postgres_volume:/var/lib/postgresql/data
+    networks:
+      - matcha
+    env_file: ./.env
+    restart: always
+  adminer:
+    container_name: matcha_adminer
+    image: bergalath/adminer-dracula:4.8.1-4
+    restart: always
+    environment:
+      ADMINER_DESIGN: dracula
+    ports:
+      - "8081:8080"
+    networks:
+      - matcha
+  backend:
+    container_name: matcha_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    networks:
+      - matcha
+    env_file: ./.env
+    restart: always
+
+
+networks:
+  matcha:
+    name: matcha
+
+
+volumes:
+  # bind the volume to the root database folder in the container
+  matcha_postgres_volume:
+    # name: postgres_data
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: ${PWD}/database
+      

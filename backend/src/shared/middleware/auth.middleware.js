@@ -7,17 +7,12 @@ import { AccessTokenNotFoundException, InvalidRefreshTokenException } from '../e
 import status from 'http-status';
 
 export default async function authMiddleware(req, res, next) {
-    const routeHandler = req.route?.stack?.[req.route.stack.length - 1]?.handle;
-    const isPublic = routeHandler && Reflect.getMetadata('isPublic', routeHandler);
 
-    console.log('Route Handler:', routeHandler);
-    console.log('Is Public:', isPublic);
-
-    if (isPublic) {
-        return next(); // Skip auth if route is public
-    }
     const cookies = cookie.parse(req.headers.cookie || '');
+    // console.log(cookies)
     const { rToken, aToken } = cookies;
+
+    // console.log({ rToken, aToken });
 
     
     try {
@@ -33,11 +28,11 @@ export default async function authMiddleware(req, res, next) {
         // Handle access token expiration or not found scenarios
         if (err.name === 'TokenExpiredError' || (err.name === 'AccessTokenNotFoundException' && rToken)) {
             try {
-                console.log('i am on catch')
+                // console.log('i am on catch')
                 // Verify refresh token and reissue access token if valid
                 const decoded = jwt.verify(rToken, process.env.RTOKEN_SECRET);
                 const decryptedSub = CryptoUtil.decrypt(decoded.sub, process.env.PAYLOAD_ENCRYPTION_KEY);
-                console.log(decryptedSub)
+                // console.log(decryptedSub)
                 const user = await userService.findById(decryptedSub);
                 if (!user) throw new UserNotFoundException();
 
@@ -50,6 +45,7 @@ export default async function authMiddleware(req, res, next) {
                 res.setHeader('Set-Cookie', cookie.serialize('aToken', newAccessToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
+                    path: '/',
                     sameSite: 'strict',
                     maxAge: parseInt(process.env.ATOKEN_VALIDITY_DURATION_IN_SECONDS)
                 }));
@@ -75,6 +71,7 @@ export const clearCookies = (res) => {
         {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
+            path: '/',
             sameSite: 'strict',
             maxAge: 0,
         }
@@ -85,6 +82,7 @@ export const clearCookies = (res) => {
         {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
+            path: '/',
             sameSite: 'strict',
             maxAge: 0,
         }

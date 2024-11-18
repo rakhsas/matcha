@@ -19,6 +19,7 @@ export const login = async (req, res) => {
             {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
+                path: '/',
                 sameSite: 'strict',
                 maxAge: parseInt(process.env.ATOKEN_VALIDITY_DURATION_IN_SECONDS) * 1000,
             }
@@ -29,6 +30,7 @@ export const login = async (req, res) => {
             {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
+                path: '/',
                 sameSite: 'strict',
                 maxAge: parseInt(process.env.RTOKEN_VALIDITY_DURATION_IN_SECONDS) * 1000,
             }
@@ -61,5 +63,27 @@ export const register = async (req, res) => {
         res.status(status.CREATED).json({ message: "User created successfully", user: newUser });
     } catch (err) {
         res.status(err.status).json({ error: err.message});
+    }
+}
+
+
+export const resetPasswordRequest = async (req, res) => {
+    try {
+        await authService.resetPasswordRequest(req.body.email);
+        res.status(status.OK).json({ message: 'Password reset link sent to email' });
+    } catch (err) {
+        console.log(err)
+        res.status(status.BAD_REQUEST).json({ error: err.message });
+    }
+}
+
+export const resetPasswordVerification = async (req, res) => {
+    try {
+        const { password } = req.body;
+        await authService.resetPasswordVerification(password);
+
+    } catch (err) {
+        console.log(err)
+        res.status(status.UNAUTHORIZED).json({ error: err.message });
     }
 }

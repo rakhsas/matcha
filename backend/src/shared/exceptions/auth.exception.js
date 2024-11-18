@@ -67,3 +67,12 @@ export class RefreshTokenNotFoundException extends Error {
         this.status = status.UNAUTHORIZED
     }
 }
+
+export class ResetPasswordTokenNotFoundException extends Error {
+    constructor() {
+        super(
+            'Reset password token not found. Please request a new reset link.',
+        );
+        this.status = status.UNAUTHORIZED
+    }
+}

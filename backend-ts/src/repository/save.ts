@@ -1,4 +1,4 @@
-import { config as pool } from "../core/database/config";
+import { config as pool } from "../core/dbconfig/config";
 import pg from "pg";
 
 export const save = async (tableName: string, data: any) => {

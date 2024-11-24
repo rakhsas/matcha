@@ -1,10 +1,10 @@
 import 'reflect-metadata'; // Required for decorators if you are using them
 import { AppModule } from './app.module'; // Import the root application module
 import { logger } from './core/logger/logger';
-import { connectWithRetry } from './core/database/config';
+import { connectWithRetry } from './core/dbconfig/config';
 import './core/logger/file-watcher';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-import loadEntities from './core/database/load';
+import loadEntities from './core/dbconfig/load';
 import path from 'path';
 import express from 'express';
 import routes from './shared/routes';
@@ -26,6 +26,12 @@ async function bootstrap() {
             throw new Error(`Failed to initialize application module: ${err.message}`);
         }
 
+        // Set up routes
+        try {
+            routes(app);
+        } catch (err: any) {
+            throw new Error(`Failed to load entities: ${err.message}`);
+        }
         // Establish the database connection with retries
         try {
             await connectWithRetry();
@@ -40,12 +46,6 @@ async function bootstrap() {
             throw new Error(`Failed to load entities: ${err.message}`);
         }
 
-        // Set up routes
-        try {
-            routes(app);
-        } catch (err: any) {
-            throw new Error(`Failed to load entities: ${err.message}`);
-        }
 
         // Start the server and listen on a specific port
         const port = process.env.PORT || 3000;

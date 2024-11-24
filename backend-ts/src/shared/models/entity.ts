@@ -1,5 +1,5 @@
 
-import { config as pool } from "../../core/database/config";
+import { config as pool } from "../../core/dbconfig/config";
 import pg from "pg";
 import { logger } from "../../core/logger/logger";
 

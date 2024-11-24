@@ -1,10 +1,10 @@
 import express from 'express';
-import { login, register } from '../../modules/auth/auth.controller.js';
-import authMiddleware from '../middleware/auth.middleware.js';
-import { Public } from '../decorators/public.decorator.js';
+import { login, register, resetPasswordRequest, resetPasswordVerification } from '../../modules/auth/auth.controller.js';
+import resetMiddleware from '../middleware/reset.middleware.js';
 const router = express.Router();
 
-router.post('/register', Public, register);
-router.post('/login', Public, login);
-
+router.post('/register', (register));
+router.post('/login', (login));
+router.post('/reset-password-req', resetPasswordRequest);
+router.post('/reset-password-ver', resetMiddleware, resetPasswordVerification);
 export default router;

@@ -1,78 +1,83 @@
 // throwable exception for authentication errors with 409 status code
 
-import status from "http-status";
+import { HttpStatus } from "http-status-ts";
+
+export interface Error {
+    name: string;
+    message: string;
+    stack?: string;
+    status: number;
+}
 
 export class UsernameExistsException extends Error {
+    statusCode: HttpStatus = HttpStatus.CONFLICT
     constructor(message = "Username already exists. Please try another username.") {
         super(message);
         this.name = this.constructor.name;
-        this.status = 409;
     }
 }
 
 export class PasswordMismatchException extends Error {
+    statusCode: HttpStatus = HttpStatus.CONFLICT
     constructor(message = "The password you entered is incorrect. Please try again.") {
         super(message);
         this.name = this.constructor.name;
-        this.status = 409;
     }
 }
 
 export class AccessTokenExpiredException extends Error {
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED
     constructor(message = "Access token has expired. Please login again.") {
         super(message);
         this.name = this.constructor.name;
-        this.status = 401;
     }
 }
 
 export class RefreshTokenExpiredException extends Error {
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED
     constructor(message = "Refresh token has expired. Please login again.") {
         super(message);
         this.name = this.constructor.name;
-        this.status = 401;
     }
 }
 
 export class InvalidAcessTokenException extends Error {
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED
     constructor(message = "Invalid access token signature. Please login again.") {
         super(message);
         this.name = this.constructor.name;
-        this.status = 401;
     }
 }
 
 export class InvalidRefreshTokenException extends Error {
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED
     constructor(message = "Invalid refresh token signature. Please login again.") {
         super(message);
         this.name = this.constructor.name;
-        this.status = 401;
     }
 }
 
 export class AccessTokenNotFoundException extends Error {
-    constructor() {
-        super(
-            'Access token not found. Please login again.',
-        );
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED
+    constructor(message = "Access token not found. Please login again.") {
+        super(message);
         this.name = this.constructor.name;
-        this.status = status.UNAUTHORIZED
     }
 }
 export class RefreshTokenNotFoundException extends Error {
-    constructor() {
-        super(
-            'Refresh token not found. Please login again.',
-        );
-        this.status = status.UNAUTHORIZED
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED
+    constructor(message = 'Refresh token not found. Please login again.') {
+        super(message);
+        this.name = this.constructor.name;
     }
 }
 
 export class ResetPasswordTokenNotFoundException extends Error {
-    constructor() {
-        super(
-            'Reset password token not found. Please request a new reset link.',
-        );
-        this.status = status.UNAUTHORIZED
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED
+    constructor(
+        message = 'Reset password token not found. Please request a new reset link.',
+    ) {
+        super(message);
+        this.name = this.constructor.name;
     }
 }

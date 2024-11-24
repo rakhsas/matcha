@@ -1,13 +1,15 @@
-import * as userService from '../user/user.service.js';
-import { InvalidCredentialsException, UserAlreadyExistsException } from '../../shared/exceptions/user.exception.js';
-import { PasswordMismatchException } from '../../shared/exceptions/auth.exception.js';
+import * as userService from '../user/services/user.service';
+import { InvalidCredentialsException, UserAlreadyExistsException } from '../../shared/exceptions/user.exception';
+import { PasswordMismatchException } from '../../shared/exceptions/auth.exception';
 import jwt from 'jsonwebtoken';
-import { CryptoUtil } from '../../shared/utils/crypto.utils.js';
+import { CryptoUtil } from '../../shared/utils/crypto.utils';
 import nodemailer from 'nodemailer';
-import { getEmailTemplate } from './utils/email.template.js';
+import { getEmailTemplate } from './utils/email.template';
+import { LoginDTO } from './dto/login.dto';
+import { CreateUserDto } from '../user/dto/user.dto';
 
 
-export const login = async (loginDTO) => {
+export const login = async (loginDTO: LoginDTO) => {
     try {
         const user = await userService.findByEmail(loginDTO.email);
 
@@ -23,13 +25,13 @@ export const login = async (loginDTO) => {
     }
 }
 
-export const generateTokens = async (user) => {
+export const generateTokens = async (user: any) => {
     try {
         const payload = {
-            sub: CryptoUtil.encrypt(user.id, process.env.PAYLOAD_ENCRYPTION_KEY),
+            sub: CryptoUtil.encrypt(user.id, process.env.PAYLOAD_ENCRYPTION_KEY || ''),
         }
-        const aToken = jwt.sign(payload, process.env.ATOKEN_SECRET, { expiresIn: process.env.ATOKEN_VALIDITY_DURATION });
-        const rToken = jwt.sign(payload, process.env.RTOKEN_SECRET, { expiresIn: process.env.RTOKEN_VALIDITY_DURATION });
+        const aToken = jwt.sign(payload, process.env.ATOKEN_SECRET || '', { expiresIn: process.env.ATOKEN_VALIDITY_DURATION });
+        const rToken = jwt.sign(payload, process.env.RTOKEN_SECRET || '', { expiresIn: process.env.RTOKEN_VALIDITY_DURATION });
         return {
             aToken,
             rToken,
@@ -41,7 +43,7 @@ export const generateTokens = async (user) => {
 }
 
 
-export const register = async (registerDTO) => {
+export const register = async (registerDTO: CreateUserDto) => {
     try {
         const user = await userService.findByEmail(registerDTO.email);
         if (user) throw new UserAlreadyExistsException();
@@ -53,11 +55,10 @@ export const register = async (registerDTO) => {
     }
 }
 
-export const resetPasswordRequest = async (email) => {
+export const resetPasswordRequest = async (email: string) => {
     try {
         const user = await userService.findByEmail(email);
         if (!user) throw new InvalidCredentialsException();
-
         const resetLink = generateResetLink(user);
         await sendPasswordResetEmail(user.email, resetLink);
     } catch (err) {
@@ -65,7 +66,7 @@ export const resetPasswordRequest = async (email) => {
     }
 }
 
-async function sendPasswordResetEmail(to, resetLink) {
+async function sendPasswordResetEmail(to: string, resetLink: string) {
     try {
         const mailOptions = getMailOptions(to, resetLink)
         await transporter.sendMail(mailOptions);
@@ -75,24 +76,21 @@ async function sendPasswordResetEmail(to, resetLink) {
     }
 }
 
-export const resetPasswordVerification = async (password) => {
+export const resetPasswordVerification = async (password: string, userId: string) => {
     try {
-        // const decoded = jwt.verify(password, process.env.ATOKEN_SECRET);
-        // const userId = CryptoUtil.decrypt(decoded.sub, process.env.PAYLOAD_ENCRYPTION_KEY);
-        // return userId;
-        console.log(password)
-        return password || 'Password reset successful';
+        const result = await userService.update( {password: password}, {id: userId})
+        return result ? "Password reseted successfully" : "Please User different Password"
     } catch (err) {
         console.log(err)
         throw err;
     }
 }
 
-function generateResetLink(user) {
+function generateResetLink(user: any) {
     const payload = {
-        sub: CryptoUtil.encrypt(user.userId, process.env.PAYLOAD_ENCRYPTION_KEY),
+        sub: CryptoUtil.encrypt(user.id, process.env.PAYLOAD_ENCRYPTION_KEY || ''),
     }
-    const resetToken = jwt.sign(payload, process.env.ATOKEN_SECRET, { expiresIn: '5m' });
+    const resetToken = jwt.sign(payload, process.env.ATOKEN_SECRET || '', { expiresIn: process.env.RESET_TOKEN_DURATION });
     return `http://${process.env.CLIENT_URL}/api/authenticate/reset-password-ver?csf=${resetToken}`;
 }
 
@@ -104,7 +102,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-function getMailOptions(to, resetLink) {
+function getMailOptions(to: string, resetLink: string) {
     const mailOptions = {
         from: 'no-reply@t.t',
         to: to,

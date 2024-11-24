@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { config as pool } from "../core/database/config";
+import { config as pool } from "../core/dbconfig/config";
 import pg from "pg";
 
 const update = async (tableName: string, data: any, condition: any) => {

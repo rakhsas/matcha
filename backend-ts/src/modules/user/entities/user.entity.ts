@@ -1,4 +1,4 @@
-import { createModel } from "../../../shared/models/entity";
+import { createModel, foreignKey } from "../../../shared/models/entity";
 
 const columns = {
     id: 'UUID PRIMARY KEY DEFAULT gen_random_uuid()',
@@ -14,6 +14,7 @@ const columns = {
 
 let userModel = null;
 (async () => {
-    userModel = createModel({ tableName: 'users', columns })
+    
+    userModel = createModel({ tableName: 'users', columns, foreignKey: [] });
     userModel.syncTable();
 })();

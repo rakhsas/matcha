@@ -38,21 +38,21 @@ export const createModel = ({ tableName, columns, foreignKey }: { tableName: str
         },
         async syncTable() {
             await (pool as pg.Pool).query(this.createTableQuery());
-
+            logger.log(`Created table ${this.tableName}`);
             const existingColumnsResult = await (pool as pg.Pool).query(`
-                    SELECT 
-                        c.column_name,
-                        c.is_nullable,
-                        c.column_default,
-                        c.is_identity,
-                        EXISTS (
-                            SELECT 1
-                            FROM information_schema.table_constraints AS tc
-                            JOIN information_schema.constraint_column_usage AS ccu
-                            ON tc.constraint_name = ccu.constraint_name
-                            WHERE tc.table_name = c.table_name
-                            AND tc.constraint_type = 'PRIMARY KEY'
-                            AND ccu.column_name = c.column_name
+                SELECT 
+                c.column_name,
+                    c.is_nullable,
+                    c.column_default,
+                    c.is_identity,
+                    EXISTS (
+                        SELECT 1
+                        FROM information_schema.table_constraints AS tc
+                        JOIN information_schema.constraint_column_usage AS ccu
+                        ON tc.constraint_name = ccu.constraint_name
+                        WHERE tc.table_name = c.table_name
+                        AND tc.constraint_type = 'PRIMARY KEY'
+                        AND ccu.column_name = c.column_name
                         ) AS is_primary,
                         EXISTS (
                             SELECT 1
@@ -60,14 +60,14 @@ export const createModel = ({ tableName, columns, foreignKey }: { tableName: str
                             JOIN information_schema.constraint_column_usage AS ccu
                             ON tc.constraint_name = ccu.constraint_name
                             WHERE tc.table_name = c.table_name
-                            AND tc.constraint_type = 'UNIQUE'
-                            AND ccu.column_name = c.column_name
-                        ) AS is_unique
-                    FROM information_schema.columns AS c
-                    WHERE c.table_name = $1;
-
-            `, [this.tableName]);
-
+                        AND tc.constraint_type = 'UNIQUE'
+                        AND ccu.column_name = c.column_name
+                    ) AS is_unique
+                FROM information_schema.columns AS c
+                WHERE c.table_name = $1;
+                `, [this.tableName.toLowerCase()]);
+            
+                
             const existingColumns = existingColumnsResult.rows.reduce((acc, row) => {
                 acc[row.column_name.toLowerCase()] = {
                     is_nullable: row.is_nullable === 'YES',
@@ -83,6 +83,7 @@ export const createModel = ({ tableName, columns, foreignKey }: { tableName: str
             const modelColumns = Object.keys(this.columns).map(col => col.toLowerCase());
             const missingColumns = modelColumns.filter(column => !existingColumns[column]);
             const extraColumns = Object.keys(existingColumns).filter(column => !modelColumns.includes(column));
+            
             for (const [column, type] of Object.entries(this.columns).filter(([col]) => missingColumns.includes(col.toLowerCase()))) {
                 const alterQuery = `ALTER TABLE ${this.tableName} ADD COLUMN ${column} ${type}`;
                 await (pool as pg.Pool).query(alterQuery);

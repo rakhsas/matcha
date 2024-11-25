@@ -14,9 +14,9 @@ const columns = {
 
 let userModel = null;
 (async () => {
-    createType({typeName: 'gender', values: ['M', 'F']});
-    createType({typeName: 'sexualPreferences', values: ['M', 'F', 'B']});
-    createType({typeName: 'interests', values: ['VEGAN', 'GEEK', 'PIERCING']});
+    await createType({typeName: 'gender', values: ['M', 'F']});
+    await createType({typeName: 'sexualpreferences', values: ['M', 'F', 'B']});
+    await createType({typeName: 'interests', values: ['VEGAN', 'GEEK', 'PIERCING']});
     const foreignKey: foreignKey[] = [
         {
             column: 'id',
@@ -27,5 +27,5 @@ let userModel = null;
         }
     ];
     userModel = createModel({ tableName: 'profile', columns, foreignKey })
-    userModel.syncTable();
+    await userModel.syncTable();
 })();

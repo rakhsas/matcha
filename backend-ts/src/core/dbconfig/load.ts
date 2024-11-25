@@ -1,17 +1,33 @@
 import fs from 'fs';
-import { dirname } from 'path';
+import path from 'path';
+import { entityOrder } from './order';
 
 async function loadEntities(__dirname: string) {
     const files = fs.readdirSync(__dirname);
+    const entitiesToLoad = [];
+
     for (const file of files) {
-        // check if file is a directory
-        const isDirectory = fs.lstatSync(`${__dirname}/${file}`).isDirectory();
+        const isDirectory = fs.lstatSync(path.join(__dirname, file)).isDirectory();
         if (isDirectory) {
-            await loadEntities(`${__dirname}/${file}`);
+            await loadEntities(path.join(__dirname, file));
         } else {
             if (file.endsWith('.entity.ts')) {
-                const entity = await import(`${__dirname}/${file}`);
+                entitiesToLoad.push(file);
             }
+        }
+    }
+
+    // Load entities in the specified order
+    for (const entityFile of entityOrder) {
+        if (entitiesToLoad.includes(entityFile)) {
+            await import(path.join(__dirname, entityFile));
+        }
+    }
+
+    // Load any remaining entities that were not specified in the order
+    for (const entityFile of entitiesToLoad) {
+        if (!entityOrder.includes(entityFile)) {
+            await import(path.join(__dirname, entityFile));
         }
     }
 }

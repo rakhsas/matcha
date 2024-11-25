@@ -1,19 +1,31 @@
-import { createModel } from "../../../shared/models/entity";
+import { createModel, createType, foreignKey } from "../../../shared/models/entity";
 
 const columns = {
     id: 'UUID PRIMARY KEY DEFAULT gen_random_uuid()',
-    firstName: 'VARCHAR(100) NOT NULL',
-    lastName: 'VARCHAR(100) NOT NULL',
-    email: 'VARCHAR(100) NOT NULL UNIQUE',
-    username: 'VARCHAR(100) NOT NULL UNIQUE',
-    password: 'VARCHAR(100) NOT NULL',
-    created_at: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-    updated_at: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-    rtoken: 'VARCHAR(100) DEFAULT NULL',
+    gender: 'gender DEFAULT \'M\'',
+    sexualPreferences: 'sexualPreferences DEFAULT \'B\'',
+    bio: 'VarChar(255) DEFAULT NULL',
+    interests: 'interests DEFAULT \'VEGAN\'',
+    location: 'VarChar(255) DEFAULT NULL',
+    pictures: 'VarChar(255)[] NOT NULL',
 };
+
+
 
 let userModel = null;
 (async () => {
-    // userModel = createModel({ tableName: 'users', columns })
-    // userModel.syncTable();
+    createType({typeName: 'gender', values: ['M', 'F']});
+    createType({typeName: 'sexualPreferences', values: ['M', 'F', 'B']});
+    createType({typeName: 'interests', values: ['VEGAN', 'GEEK', 'PIERCING']});
+    const foreignKey: foreignKey[] = [
+        {
+            column: 'id',
+            refTable: 'users',
+            refColumn: 'id',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        }
+    ];
+    userModel = createModel({ tableName: 'profile', columns, foreignKey })
+    userModel.syncTable();
 })();

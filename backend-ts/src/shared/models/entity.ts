@@ -3,7 +3,29 @@ import { config as pool } from "../../core/dbconfig/config";
 import pg from "pg";
 import { logger } from "../../core/logger/logger";
 
-export const createModel = ({ tableName, columns }: { tableName: string, columns: { [key: string]: string } }) => {
+export interface foreignKey {
+    column: string,
+    refTable: string,
+    refColumn: string,
+    onDelete: string,
+    onUpdate: string
+}
+export const createType = async ({ typeName, values }: { typeName: string, values: string[] }) => {
+    const query = `
+        DO $$ 
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = '${typeName}') THEN
+                CREATE TYPE ${typeName} AS ENUM (${values.map(value => `'${value}'`).join(', ')});
+            END IF;
+        EXCEPTION
+            WHEN duplicate_object THEN
+                RAISE NOTICE 'type ${typeName} already exists';
+        END $$;
+    `;
+    await (pool as pg.Pool).query(query);
+    logger.log(`Created type ${typeName}`);
+}
+export const createModel = ({ tableName, columns, foreignKey }: { tableName: string, columns: { [key: string]: string } , foreignKey: foreignKey[] }) => {
     return {
         tableName,
         columns,
@@ -11,7 +33,8 @@ export const createModel = ({ tableName, columns }: { tableName: string, columns
             const columnsDefinition = Object.entries(this.columns)
                 .map(([column, type]) => `${column} ${type}`)
                 .join(', ');
-            return `CREATE TABLE IF NOT EXISTS ${this.tableName} (${columnsDefinition})`;
+            const foreignKeys = foreignKey.map(fk => `FOREIGN KEY (${fk.column}) REFERENCES ${fk.refTable}(${fk.refColumn}) ON DELETE ${fk.onDelete} ON UPDATE ${fk.onUpdate}`).join(', ');
+            return `CREATE TABLE IF NOT EXISTS ${this.tableName} (${columnsDefinition} ${foreignKeys.length > 1 ? ',' + foreignKeys : '' }) `;
         },
         async syncTable() {
             await (pool as pg.Pool).query(this.createTableQuery());
@@ -60,7 +83,6 @@ export const createModel = ({ tableName, columns }: { tableName: string, columns
             const modelColumns = Object.keys(this.columns).map(col => col.toLowerCase());
             const missingColumns = modelColumns.filter(column => !existingColumns[column]);
             const extraColumns = Object.keys(existingColumns).filter(column => !modelColumns.includes(column));
-
             for (const [column, type] of Object.entries(this.columns).filter(([col]) => missingColumns.includes(col.toLowerCase()))) {
                 const alterQuery = `ALTER TABLE ${this.tableName} ADD COLUMN ${column} ${type}`;
                 await (pool as pg.Pool).query(alterQuery);

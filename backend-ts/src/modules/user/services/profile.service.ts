@@ -1,5 +1,5 @@
 import { repository } from '../../../repository';
-import { ProfileDto } from '../dto/profile.dto';
+import { ProfileDto, ProfileUpdateDto } from '../dto/profile.dto';
 
 
 const save = async (profile: ProfileDto) => {
@@ -12,4 +12,12 @@ const get = async (id: string): Promise<ProfileDto> => {
     return res;
 }
 
-export { save, get };
+const update = async (profileUpdateDto: ProfileUpdateDto) => {
+    const id = profileUpdateDto.id;
+    delete profileUpdateDto.id;
+    const res: boolean  = await repository.update('profile', profileUpdateDto, { id });
+    if (!res) throw new Error('Profile not updated, try to update existing data');
+    return {message: "Profile updated successfully"}
+}
+
+export { save, get, update };

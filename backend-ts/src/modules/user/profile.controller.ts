@@ -12,3 +12,12 @@ export const saveProfile = async (req: any, res: Response) => {
         res.status(HttpStatus.BAD_REQUEST).json({ error: err.message});
     }
 };
+
+export const getProfile = async (req: any, res: Response) => {
+    try {
+        const profile = await profileService.get(req.userId);
+        res.status(HttpStatus.OK).json(profile);
+    } catch (err: any) {
+        res.status(HttpStatus.BAD_REQUEST).json({ error: err.message });
+    }
+}

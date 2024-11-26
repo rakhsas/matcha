@@ -21,3 +21,13 @@ export const getProfile = async (req: any, res: Response) => {
         res.status(HttpStatus.BAD_REQUEST).json({ error: err.message });
     }
 }
+
+export const updateProfile = async (req: any, res: Response) => {
+    try {
+        req.body.id = req.userId;
+        const updatedProfile = await profileService.update(req.body as ProfileDto);
+        res.status(HttpStatus.OK).json(updatedProfile);
+    } catch (err: any) {
+        res.status(HttpStatus.BAD_REQUEST).json({ error: err.message });
+    }
+}

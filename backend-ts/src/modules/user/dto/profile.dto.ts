@@ -33,3 +33,23 @@ export class ProfileDto {
         this.pictures = body.pictures;
     }
 }
+
+export class ProfileUpdateDto {
+    id?: string;
+    gender?: Gender;
+    sexualPreferences?: SexualPreferences;
+    bio?: string;
+    interests?: Interest;
+    location?: string;
+    pictures?: string[];
+
+    constructor(body: any) {
+        this.id = body.id;
+        this.bio = body.bio;
+        this.gender = body.gender;
+        this.interests = body.interests;
+        this.location = body.location;
+        this.pictures = body.pictures;
+        this.sexualPreferences = body.sexualPreferences;
+    }
+}

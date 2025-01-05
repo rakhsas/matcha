@@ -33,16 +33,16 @@ services:
   #     - matcha
   #   env_file: ./.env
   #   restart: always
-  backend-ts-1:
-    container_name: matcha_backend_ts
+  backend:
+    container_name: matcha_backend
     build:
-      context: ./backend-ts
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - ./backend-ts:/app
-      - ./backend-ts/node_modules:/app/node_modules
+      - ./backend:/app
+      - ./backend/node_modules:/app/node_modules
     networks:
       - matcha
     env_file: ./.env

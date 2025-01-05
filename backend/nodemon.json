@@ -5,7 +5,7 @@
   "exec": "node --no-warnings --loader ts-node/esm --experimental-specifier-resolution=node ./src/index.ts",
   "quiet": true,
   "events": {
-    "restart": "echo [nodemon] File changed: $FILENAME"
+    "restart": "cmd /c echo [nodemon] File changed: %FILENAME%"
   }
 }
 

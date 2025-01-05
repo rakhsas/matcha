@@ -8,7 +8,6 @@ import loadEntities from './core/dbconfig/load';
 import path from 'path';
 import express from 'express';
 import routes from './shared/routes';
-import { json } from 'stream/consumers';
 
 import dotenv from 'dotenv'; 
 async function bootstrap() {
@@ -41,6 +40,7 @@ async function bootstrap() {
 
         // Load entities
         try {
+            console.log("dirname: ",__dirname);
             loadEntities(__dirname);
         } catch (err: any) {
             throw new Error(`Failed to load entities: ${err.message}`);

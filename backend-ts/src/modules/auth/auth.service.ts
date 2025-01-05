@@ -4,7 +4,7 @@ import { PasswordMismatchException } from '../../shared/exceptions/auth.exceptio
 import jwt from 'jsonwebtoken';
 import { CryptoUtil } from '../../shared/utils/crypto.utils';
 import nodemailer from 'nodemailer';
-import { getEmailTemplate } from './utils/email.template';
+import { getResetPasswordEmailTemplate, accountVerificationTemplate } from './utils/email.template';
 import { LoginDTO } from './dto/login.dto';
 import { CreateUserDto } from '../user/dto/user.dto';
 
@@ -48,8 +48,22 @@ export const register = async (registerDTO: CreateUserDto) => {
         const user = await userService.findByEmail(registerDTO.email);
         if (user) throw new UserAlreadyExistsException();
 
-        const createdUser = await userService.save(registerDTO);
+        const createdUser: CreateUserDto = await userService.save(registerDTO);
+        const verificationLink = generateVerificationLink(createdUser.email);
+        await sendMail(createdUser.email, verificationLink, 'Account Verification' ,accountVerificationTemplate);
         return createdUser;
+    } catch (err) {
+        throw err;
+    }
+}
+
+export const generateVerificationLink = (email: string) => {
+    try {
+        const payload = {
+            sub: CryptoUtil.encrypt(email, process.env.PAYLOAD_ENCRYPTION_KEY || ''),
+        }
+        const verificationToken = jwt.sign(payload, process.env.VTOKEN_SECRET || '', { expiresIn: process.env.VERIFICATION_TOKEN_DURATION });
+        return `http://${process.env.CLIENT_URL}/api/authenticate/verify?csf=${verificationToken}`;
     } catch (err) {
         throw err;
     }
@@ -60,17 +74,17 @@ export const resetPasswordRequest = async (email: string) => {
         const user = await userService.findByEmail(email);
         if (!user) throw new InvalidCredentialsException();
         const resetLink = generateResetLink(user);
-        await sendPasswordResetEmail(user.email, resetLink);
+        await sendMail(user.email, resetLink, 'Password Reset', getResetPasswordEmailTemplate);
     } catch (err) {
         throw err;
     }
 }
 
-async function sendPasswordResetEmail(to: string, resetLink: string) {
+async function sendMail(to: string, content: string, subject: string, fn: (a: string) => string ) {
     try {
-        const mailOptions = getMailOptions(to, resetLink)
+        const mailOptions = getMailOptions(to, subject, fn(content));
         await transporter.sendMail(mailOptions);
-        console.log('Password reset email sent successfully');
+        console.log('Email sent successfully');
     } catch (error) {
         console.error('Error sending password reset email:', error);
     }
@@ -102,12 +116,12 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-function getMailOptions(to: string, resetLink: string) {
+function getMailOptions(to: string, subject: string, template: string) {
     const mailOptions = {
         from: 'no-reply@t.t',
         to: to,
-        subject: 'Password Reset Request',
-        html: getEmailTemplate(resetLink),
+        subject: subject,
+        html: template
     };
     return mailOptions;
 }

@@ -7,9 +7,11 @@ const columns = {
     email: 'VARCHAR(100) NOT NULL UNIQUE',
     username: 'VARCHAR(100) NOT NULL UNIQUE',
     password: 'VARCHAR(100) NOT NULL',
+    rtoken: 'VARCHAR(100) DEFAULT NULL',
+    verified: 'BOOLEAN DEFAULT FALSE',
+    vtoken: 'VARCHAR(100) DEFAULT NULL',
     created_at: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     updated_at: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-    rtoken: 'VARCHAR(100) DEFAULT NULL',
 };
 
 let userModel = null;

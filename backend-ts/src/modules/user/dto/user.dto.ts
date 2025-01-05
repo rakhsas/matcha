@@ -5,6 +5,7 @@ export class CreateUserDto {
     email: string;
     username: string;
     password: string;
+    verified: boolean;
 
     constructor(body: any) {
         this.firstName = body.firstName;
@@ -12,6 +13,7 @@ export class CreateUserDto {
         this.email = body.email;
         this.username = body.username;
         this.password = body.password;
+        this.verified = body.verified;
     }
 }
 

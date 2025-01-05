@@ -1,6 +1,5 @@
 import { repository } from '../../../repository';
 import  * as bcrypt from 'bcrypt-ts';
-import { IRelations } from '../../../shared/utils/interfaces';
 
 const save = async (UserData: any) => {
     try {
@@ -74,4 +73,4 @@ const update = async (data: any, condition: any) => {
 
 export { save, findByEmail, comparePassword, findById, update,
     //  getAllUsersWithRelations
-     };
+};

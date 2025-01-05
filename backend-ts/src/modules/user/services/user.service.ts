@@ -56,4 +56,21 @@ const update = async (data: any, condition: any) => {
     }
 }
 
-export { save, findByEmail, comparePassword, findById, update };
+// const getAllUsersWithRelations = async () => {
+//     const relations: IRelations[] = [
+//         {
+//             tableName: 'profile',
+//             foreignKey: "id"
+//         }
+//     ]
+//     const res = await repository.findWithRelations('users', 'id', relations);
+//     res.map((row) => {
+//         delete row.id
+//         delete row.password
+//     })
+//     return res
+// }
+
+export { save, findByEmail, comparePassword, findById, update,
+    //  getAllUsersWithRelations
+};

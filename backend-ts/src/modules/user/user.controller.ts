@@ -12,3 +12,11 @@ export const createUser = async (req: Request, res: Response) => {
     }
 };
 
+// export const getUsersWithRelations = async (req: any, res: Response) => {
+//     try {
+//         const users = await userService.getAllUsersWithRelations();
+//         res.status(HttpStatus.OK).json(users);
+//     } catch (err: any) {
+//         res.status(HttpStatus.BAD_REQUEST).json({ error: err.message });
+//     }
+// }

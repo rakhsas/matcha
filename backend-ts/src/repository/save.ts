@@ -11,7 +11,6 @@ export const save = async (tableName: string, data: any) => {
             .join(', ');
 
         const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeHolders}) RETURNING *`;
-        console.log(values)
         const result = await (pool as pg.Pool).query(query, values);
         // console.log(`Data inserted into ${tableName}`, result.rows[0]);
 

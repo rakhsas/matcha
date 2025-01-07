@@ -1,32 +1,32 @@
 // src/dtos/userDto.js
 export class CreateUserDto {
-    firstName: string;
-    lastName: string;
-    email: string;
-    username: string;
-    password: string;
-    verified: boolean;
+	firstName: string;
+	lastName: string;
+	email: string;
+	username: string;
+	password: string;
+	verified: boolean;
 
-    constructor(body: any) {
-        this.firstName = body.firstName;
-        this.lastName = body.lastName;
-        this.email = body.email;
-        this.username = body.username;
-        this.password = body.password;
-        this.verified = body.verified;
-    }
+	constructor(body: any) {
+		this.firstName = body.firstName;
+		this.lastName = body.lastName;
+		this.email = body.email;
+		this.username = body.username;
+		this.password = body.password;
+		this.verified = body.verified || false;
+	}
 }
 
 export class UpdateUserDto {
-    firstName: string;
-    lastName: string;
-    email: string;
-    username: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	username: string;
 
-    constructor(body: any) {
-        this.firstName = body.firstName;
-        this.lastName = body.lastName;
-        this.email = body.email;
-        this.username = body.username;
-    }
+	constructor(body: any) {
+		this.firstName = body.firstName;
+		this.lastName = body.lastName;
+		this.email = body.email;
+		this.username = body.username;
+	}
 }

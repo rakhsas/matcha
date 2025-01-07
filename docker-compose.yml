@@ -57,10 +57,10 @@ networks:
 volumes:
   # bind the volume to the root database folder in the container
   matcha_postgres_volume:
-    # name: postgres_data
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device: ${PWD}/database
+    name: postgres_data_1
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/database
       

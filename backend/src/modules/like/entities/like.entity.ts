@@ -2,7 +2,7 @@ import { createModel, foreignKey } from '../../../shared/models/entity';
 
 const columns = {
 	id: 'SERIAL PRIMARY KEY',
-	viewerId: 'UUID NOT NULL',
+	liked_id: 'UUID NOT NULL',
 	user_id: 'UUID NOT NULL',
 	viewed_At: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
 };
@@ -11,7 +11,7 @@ let model = null;
 (async () => {
 	const foreignKey: foreignKey[] = [
 		{
-			column: 'viewerId',
+			column: 'liked_id',
 			refTable: 'users',
 			refColumn: 'id',
 			onDelete: 'CASCADE',
@@ -25,6 +25,6 @@ let model = null;
 			onUpdate: 'CASCADE',
 		},
 	];
-	model = createModel({ tableName: 'profileViews', columns, foreignKey });
+	model = createModel({ tableName: 'likes', columns, foreignKey });
 	model.syncTable();
 })();
